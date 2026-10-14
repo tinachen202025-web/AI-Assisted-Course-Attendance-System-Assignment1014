@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartClass 智慧課堂點名與學生管理系統</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts: Noto Sans TC & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- 背景流光漸層飾球 -->
+  <div class="bg-decoration">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- 頂部導航與課堂資訊列 -->
+    <header class="top-nav">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            <path d="M9 10h6"></path>
+            <path d="M9 14h4"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>SmartClass <span class="badge-tag">Pro</span></h1>
+          <p class="subtitle">智慧課堂點名與出缺席即時管理系統</p>
+        </div>
+      </div>
+
+      <div class="course-controls">
+        <div class="control-pill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span id="currentDateDisplay">2026/09/24 (週四)</span>
+        </div>
+
+        <div class="course-name-box">
+          <span class="dot-indicator"></span>
+          <input type="text" id="courseNameInput" value="互動網頁程式設計 (三)" title="點擊直接修改課程名稱">
+        </div>
+
+        <button id="soundToggleBtn" class="icon-btn" title="開關音效">
+          <svg id="soundOnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="soundOffIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- 數據儀表板統計列 -->
+    <section class="stats-grid">
+      <!-- 總人數 -->
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">全班總人數</span>
+          <div class="stat-icon-wrap icon-total">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value" id="statTotalCount">0</div>
+          <span class="stat-unit">位學生</span>
+        </div>
+        <div class="stat-footer text-muted">包含全體已登記名冊成員</div>
+      </div>
+
+      <!-- 實到人數 -->
+      <div class="stat-card stat-success">
+        <div class="stat-header">
+          <span class="stat-title">實到人數</span>
+          <div class="stat-icon-wrap icon-present">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value text-emerald" id="statPresentCount">0</div>
+          <span class="stat-unit">位出席</span>
+        </div>
+        <div class="stat-footer">
+          <span class="pill-badge pill-present" id="statPresentRatioBadge">0% 比例</span>
+        </div>
+      </div>
+
+      <!-- 請假人數 -->
+      <div class="stat-card stat-warning">
+        <div class="stat-header">
+          <span class="stat-title">請假人數</span>
+          <div class="stat-icon-wrap icon-leave">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value text-amber" id="statLeaveCount">0</div>
+          <span class="stat-unit">位請假</span>
+        </div>
+        <div class="stat-footer text-muted">事前報備或證明核可</div>
+      </div>
+
+      <!-- 缺席人數 -->
+      <div class="stat-card stat-danger">
+        <div class="stat-header">
+          <span class="stat-title">缺席人數</span>
+          <div class="stat-icon-wrap icon-absent">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value text-rose" id="statAbsentCount">0</div>
+          <span class="stat-unit">位缺席</span>
+        </div>
+        <div class="stat-footer">
+          <button id="notifyBtn" class="notify-btn" title="開啟通知缺席學生面板">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span>發送缺勤通知</span>
+            <span class="notify-badge-num" id="notifyBadgeNum">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 出席率圓形動態指示卡 -->
+      <div class="stat-card stat-rate">
+        <div class="stat-header">
+          <span class="stat-title">整體出席率</span>
+          <span class="status-chip" id="rateStatusChip">計算中</span>
+        </div>
+        <div class="rate-gauge-container">
+          <div class="circular-progress" id="circularProgress">
+            <svg viewBox="0 0 100 100" class="gauge-svg">
+              <circle class="gauge-bg" cx="50" cy="50" r="42"></circle>
+              <circle class="gauge-fill" id="gaugeFill" cx="50" cy="50" r="42"></circle>
+            </svg>
+            <div class="gauge-inner-text">
+              <span id="attendanceRateText" class="rate-percentage">0%</span>
+              <span class="rate-label">出席比率</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 點名模式切換標籤與快速工具列 -->
+    <section class="mode-action-bar">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="list-mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+          <span>📋 全班點名清單</span>
+        </button>
+
+        <button class="tab-btn" data-tab="lucky-draw-mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="5"></rect>
+            <circle cx="8" cy="8" r="1.5" fill="currentColor"></circle>
+            <circle cx="16" cy="8" r="1.5" fill="currentColor"></circle>
+            <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+            <circle cx="8" cy="16" r="1.5" fill="currentColor"></circle>
+            <circle cx="16" cy="16" r="1.5" fill="currentColor"></circle>
+          </svg>
+          <span>🎲 隨機抽點互動</span>
+        </button>
+
+        <button class="tab-btn" data-tab="speed-mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span>⚡ 沉浸極速點名</span>
+        </button>
+
+        <button class="tab-btn" data-tab="groups-mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>👥 課堂分組管理</span>
+        </button>
+
+        <button class="tab-btn" data-tab="records-mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>📑 請假與警示紀錄</span>
+        </button>
+      </div>
+
+      <!-- 快速工具操作鈕群 -->
+      <div class="actions-group">
+        <button id="batchAllPresentBtn" class="btn btn-secondary-emerald" title="將所有未登記或缺席學生一鍵設為出席">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>全體出席</span>
+        </button>
+        <button id="resetAllAttendanceBtn" class="btn btn-secondary" title="清空今日出缺席紀錄">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 2v6h6"></path>
+            <path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path>
+            <path d="M21 22v-6h-6"></path>
+            <path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path>
+          </svg>
+          <span>重置狀態</span>
+        </button>
+        <button id="openAddStudentModalBtn" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>新增學生</span>
+        </button>
+        <button id="exportImportBtn" class="btn btn-outline" title="名單匯入/匯出與備份">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>名冊備份</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 模式 1: 全班清單點名視圖 -->
+    <main id="list-mode" class="tab-content active">
+      <!-- 篩選與搜尋列 -->
+      <div class="filter-bar">
+        <div class="search-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="searchInput" placeholder="搜尋學生姓名、學號或信箱..." autocomplete="off">
+          <button id="clearSearchBtn" class="clear-btn" style="display:none;">✕</button>
+        </div>
+
+        <div class="filter-pills">
+          <button class="filter-pill active" data-filter="all">全部 (<span id="countPillAll">0</span>)</button>
+          <button class="filter-pill" data-filter="present">出席 (<span id="countPillPresent">0</span>)</button>
+          <button class="filter-pill" data-filter="leave">請假 (<span id="countPillLeave">0</span>)</button>
+          <button class="filter-pill" data-filter="absent">缺席 (<span id="countPillAbsent">0</span>)</button>
+          <button class="filter-pill" data-filter="unmarked">未標記 (<span id="countPillUnmarked">0</span>)</button>
+        </div>
+      </div>
+
+      <!-- 學生卡片網格 -->
+      <div class="students-grid" id="studentsGrid">
+        <!-- 學生卡片由 JS 動態生成 -->
+      </div>
+
+      <!-- 查無結果空狀態 -->
+      <div id="noResultsState" class="empty-state" style="display:none;">
+        <div class="empty-icon">🔍</div>
+        <h3>找不到相符的學生</h3>
+        <p>請嘗試不同關鍵字或切換上方的篩選分類標籤</p>
+      </div>
+    </main>
+
+    <!-- 模式 2: 隨機抽點互動視圖 -->
+    <section id="lucky-draw-mode" class="tab-content">
+      <div class="lucky-draw-container">
+        <!-- 抽籤控制側邊設定欄 -->
+        <div class="lucky-settings-panel">
+          <div class="card-header-styled">
+            <div class="header-icon">⚙️</div>
+            <div>
+              <h3>抽籤機制設定</h3>
+              <p>自由自訂抽點池與回答紀錄</p>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <label class="toggle-control">
+              <input type="checkbox" id="drawExcludeAbsentCheck" checked>
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">自動排除已缺席/請假學生</span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <label class="toggle-control">
+              <input type="checkbox" id="drawNoRepeatCheck" checked>
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">避免本堂重複抽出已抽過學生</span>
+            </label>
+          </div>
+
+          <div class="draw-pool-stat">
+            <div class="pool-stat-label">目前可抽點候選池</div>
+            <div class="pool-stat-count"><span id="drawCandidateCount">0</span> 位候選人</div>
+          </div>
+
+          <!-- 抽籤歷史紀錄清單 -->
+          <div class="draw-history-box">
+            <div class="draw-history-header">
+              <span>📜 本堂抽點歷史</span>
+              <button id="clearDrawHistoryBtn" class="text-btn">清空紀錄</button>
+            </div>
+            <ul id="drawHistoryList" class="draw-history-list">
+              <li class="empty-history-item">尚未抽出任何學生</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 抽籤主要展演卡片區 -->
+        <div class="lucky-main-stage">
+          <div class="draw-display-card" id="drawStageCard">
+            <!-- 初始待機狀態 -->
+            <div class="stage-standby" id="stageStandby">
+              <div class="lucky-sparkle-icon">✨</div>
+              <h2>課堂隨機抽點</h2>
+              <p>點擊下方按鈕啟動隨機轉盤，抽出幸運學生回答問題！</p>
+            </div>
+
+            <!-- 抽籤中跑馬燈動畫區 -->
+            <div class="stage-rolling" id="stageRolling" style="display:none;">
+              <div class="roll-avatar-wrapper">
+                <div class="rolling-avatar" id="rollingAvatar">🎯</div>
+              </div>
+              <div class="rolling-name" id="rollingName">隨機抽取中...</div>
+              <div class="rolling-id" id="rollingId">點選號碼隨機輪轉</div>
+            </div>
+
+            <!-- 抽出學生結果卡 -->
+            <div class="stage-winner" id="stageWinner" style="display:none;">
+              <div class="winner-glow"></div>
+              <div class="winner-badge">🎉 幸運中選！</div>
+              <div class="winner-avatar" id="winnerAvatar"></div>
+              <h2 class="winner-name" id="winnerName">學生姓名</h2>
+              <div class="winner-meta">
+                <span class="winner-id" id="winnerId">410283921</span>
+                <span class="winner-group" id="winnerGroup">第 1 組</span>
+              </div>
+
+              <!-- 抽中後即時標記出缺席與加分快捷按鈕 -->
+              <div class="winner-actions-wrap">
+                <div class="action-subtitle">即時標記出缺席狀態：</div>
+                <div class="status-btn-group">
+                  <button class="status-btn btn-state-present" id="winnerMarkPresentBtn">
+                    ✓ 出席
+                  </button>
+                  <button class="status-btn btn-state-leave" id="winnerMarkLeaveBtn">
+                    ⏱ 請假
+                  </button>
+                  <button class="status-btn btn-state-absent" id="winnerMarkAbsentBtn">
+                    ✕ 缺席
+                  </button>
+                </div>
+
+                <div class="bonus-action-wrap">
+                  <div class="action-subtitle">課堂互動表現加分：</div>
+                  <div class="bonus-btn-group">
+                    <button class="bonus-btn" id="winnerAddPointBtn">
+                      ⭐ 課堂回答良好 (+1 分)
+                    </button>
+                    <span class="current-points-tag">目前平時分: <strong id="winnerScore">0</strong> 分</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 抽籤觸發大按鈕 -->
+          <div class="draw-trigger-wrap">
+            <button id="startDrawBtn" class="big-draw-btn">
+              <span class="draw-btn-shine"></span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span id="drawBtnText">開始隨機抽點</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 模式 3: 沉浸極速點名視圖 -->
+    <section id="speed-mode" class="tab-content">
+      <div class="speed-roll-container">
+        <!-- 進度條 -->
+        <div class="speed-progress-header">
+          <div class="speed-counter">
+            學生進度：<strong id="speedCurrentIndex">1</strong> / <span id="speedTotalCount">0</span>
+          </div>
+          <div class="speed-progress-bar">
+            <div class="speed-progress-fill" id="speedProgressFill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- 焦點大卡片 -->
+        <div class="speed-card" id="speedCard">
+          <div class="speed-avatar-container">
+            <div class="speed-avatar" id="speedAvatar">王</div>
+            <div class="speed-current-status-badge" id="speedStatusBadge">未標記</div>
+          </div>
+          <div class="speed-info">
+            <h2 id="speedName">王小明</h2>
+            <p id="speedId" class="speed-id-text">學號：41108201</p>
+            <p id="speedEmail" class="speed-email-text">小組：第 2 組 | 信箱：student@univ.edu.tw</p>
+          </div>
+
+          <!-- 快速按鍵控制 -->
+          <div class="speed-action-grid">
+            <button class="speed-status-btn btn-present" id="speedBtnPresent" title="快捷鍵 1 或 A">
+              <span class="key-hint">鍵盤 1 / A</span>
+              <span class="btn-icon">✓</span>
+              <span class="btn-label">出席</span>
+            </button>
+            <button class="speed-status-btn btn-leave" id="speedBtnLeave" title="快捷鍵 2 或 S">
+              <span class="key-hint">鍵盤 2 / S</span>
+              <span class="btn-icon">⏱</span>
+              <span class="btn-label">請假</span>
+            </button>
+            <button class="speed-status-btn btn-absent" id="speedBtnAbsent" title="快捷鍵 3 或 D">
+              <span class="key-hint">鍵盤 3 / D</span>
+              <span class="btn-icon">✕</span>
+              <span class="btn-label">缺席</span>
+            </button>
+          </div>
+
+          <!-- 上一位 / 下一位切換 -->
+          <div class="speed-nav-buttons">
+            <button id="speedPrevBtn" class="btn btn-outline">
+              ← 上一位 (← 鍵)
+            </button>
+            <button id="speedNextBtn" class="btn btn-primary">
+              下一位 (→ 鍵 / Space) →
+            </button>
+          </div>
+        </div>
+
+        <div class="speed-tips">
+          💡 <strong>快速鍵操作提示：</strong>按下鍵盤 <kbd>1</kbd> 出席、<kbd>2</kbd> 請假、<kbd>3</kbd> 缺席，系統將自動跳轉至下一位同學！
+        </div>
+      </div>
+    </section>
+
+    <!-- 模式 4: 課堂分組管理視圖 -->
+    <section id="groups-mode" class="tab-content">
+      <div class="groups-management-container">
+        <!-- 分組控制橫條 -->
+        <div class="group-control-card">
+          <div class="group-control-header">
+            <div>
+              <h3>👥 智慧課堂分組控制台</h3>
+              <p class="text-muted text-sm">支援隨機演算法分配、手動拖曳/點選調整，以及小組課堂互動計分</p>
+            </div>
+            <div class="group-header-actions">
+              <button id="randomGroupBtn" class="btn btn-primary">
+                🎲 執行隨機分組
+              </button>
+              <button id="addGroupBtn" class="btn btn-secondary">
+                ➕ 手動新增小組
+              </button>
+              <button id="exportGroupsCsvBtn" class="btn btn-outline" title="匯出分組名單為 CSV 檔">
+                📊 匯出分組名冊
+              </button>
+              <button id="copyGroupsTextBtn" class="btn btn-outline" title="一鍵複製純文字分組清單">
+                📋 複製分組名單
+              </button>
+            </div>
+          </div>
+
+          <!-- 分組參數調整列 -->
+          <div class="group-params-bar">
+            <div class="param-item">
+              <label class="param-label">分組依據方式：</label>
+              <div class="radio-inline-group">
+                <label><input type="radio" name="groupingRule" value="byGroupCount" checked> 指定組數</label>
+                <label><input type="radio" name="groupingRule" value="byMemberCount"> 每組人數</label>
+              </div>
+            </div>
+
+            <div class="param-item">
+              <label class="param-label" id="groupCountLabel" for="groupCountInput">目標組數：</label>
+              <input type="number" id="groupCountInput" class="form-input-sm" min="2" max="15" value="4">
+            </div>
+
+            <div class="param-item">
+              <label class="toggle-control">
+                <input type="checkbox" id="groupExcludeAbsentCheck" checked>
+                <span class="toggle-slider"></span>
+                <span class="toggle-label text-sm">僅分組今日實到學生 (排除缺席/請假)</span>
+              </label>
+            </div>
+
+            <div class="group-summary-pill">
+              全體學生: <strong id="groupTotalStudentsCount">0</strong> 人 |
+              分組總組數: <strong id="groupTotalTeamsCount">0</strong> 組
+            </div>
+          </div>
+        </div>
+
+        <!-- 小組卡片網格 -->
+        <div class="groups-grid" id="groupsGrid">
+          <!-- 小組卡片由 JS 動態生成 -->
+        </div>
+
+        <!-- 未分組學生停泊區 (若有學生未被分派) -->
+        <div class="unassigned-dock" id="unassignedDock" style="display: none;">
+          <div class="dock-header">
+            <span>⚠️ 尚未分組學生 (<strong id="unassignedCount">0</strong> 人)</span>
+            <small class="text-muted">點選學生卡片可快速分派至指定小組</small>
+          </div>
+          <div class="unassigned-chips-wrap" id="unassignedChips">
+            <!-- 未分組學生晶片 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 模式 5: 請假與警假紀錄查詢視圖 -->
+    <section id="records-mode" class="tab-content">
+      <div class="records-container">
+        <!-- 頂部視圖切換與統計標籤 -->
+        <div class="records-nav-bar">
+          <div class="records-view-tabs">
+            <button class="records-tab-btn active" data-subtab="leave-audit">
+              📑 請假歷史紀錄清冊 (<span id="totalLeaveRecordsCount">0</span> 筆)
+            </button>
+            <button class="records-tab-btn" data-subtab="attendance-backfill">
+              📅 歷史出缺席紀錄
+            </button>
+            <button class="records-tab-btn" data-subtab="warning-monitor">
+              🚨 出缺勤警戒名單監控 (<span id="totalWarningCount">0</span> 人)
+            </button>
+          </div>
+
+          <div class="records-nav-actions">
+            <button id="openManualLeaveModalBtn" class="btn btn-primary">
+              ➕ 補登/修改紀錄
+            </button>
+            <button id="exportLeaveRecordsCsvBtn" class="btn btn-outline">
+              📊 匯出請假清冊 (CSV)
+            </button>
+          </div>
+        </div>
+
+        <!-- 子視圖 1: 請假歷史紀錄清冊 -->
+        <div id="subtab-leave-audit" class="subtab-content active">
+          <!-- 請假類別統計小卡 -->
+          <div class="leave-types-metric-bar">
+            <div class="metric-pill metric-official">
+              <span class="metric-icon">🏢</span>
+              <span class="metric-name">公假</span>
+              <strong id="metricCountOfficial">0</strong> 次
+            </div>
+            <div class="metric-pill metric-personal">
+              <span class="metric-icon">🏠</span>
+              <span class="metric-name">事假</span>
+              <strong id="metricCountPersonal">0</strong> 次
+            </div>
+            <div class="metric-pill metric-mental">
+              <span class="metric-icon">🧠</span>
+              <span class="metric-name">心理假</span>
+              <strong id="metricCountMental">0</strong> 次
+            </div>
+            <div class="metric-pill metric-bereavement">
+              <span class="metric-icon">🕊️</span>
+              <span class="metric-name">喪假</span>
+              <strong id="metricCountBereavement">0</strong> 次
+            </div>
+            <div class="metric-pill metric-sick">
+              <span class="metric-icon">💊</span>
+              <span class="metric-name">病假</span>
+              <strong id="metricCountSick">0</strong> 次
+            </div>
+          </div>
+
+          <!-- 請假清冊過濾列 -->
+          <p class="text-muted text-sm" style="margin:0 0 10px;">同一學生同一日僅保留最新一筆請假／出缺席狀態；重複修改會覆寫當日紀錄。</p>
+          <div class="records-filter-bar">
+            <div class="search-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="leaveSearchInput" placeholder="搜尋姓名、學號或請假事由...">
+            </div>
+            <div class="search-box" style="min-width:180px;">
+              <input type="date" id="leaveDateFilter" title="依請假日期篩選">
+              <button type="button" id="clearLeaveDateFilterBtn" class="btn btn-outline" style="padding:6px 10px;font-size:0.78rem;">清除日期</button>
+            </div>
+
+            <div class="filter-pills">
+              <button class="filter-pill-type active" data-leave-filter="all">全部假別</button>
+              <button class="filter-pill-type" data-leave-filter="official">🏢 公假</button>
+              <button class="filter-pill-type" data-leave-filter="personal">🏠 事假</button>
+              <button class="filter-pill-type" data-leave-filter="mental">🧠 心理假</button>
+              <button class="filter-pill-type" data-leave-filter="bereavement">🕊️ 喪假</button>
+              <button class="filter-pill-type" data-leave-filter="sick">💊 病假</button>
+            </div>
+          </div>
+
+          <!-- 請假紀錄表格 -->
+          <div class="records-table-card">
+            <div class="table-responsive">
+              <table class="records-table">
+                <thead>
+                  <tr>
+                    <th>請假日期</th>
+                    <th>登記時間</th>
+                    <th>學號</th>
+                    <th>姓名</th>
+                    <th>分組</th>
+                    <th>請假類別</th>
+                    <th>事由說明</th>
+                    <th>審核狀態</th>
+                    <th>當日狀態</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="leaveRecordsTableBody">
+                  <!-- 請假資料由 JS 動態生成 -->
+                </tbody>
+              </table>
+            </div>
+            <div id="noLeaveRecordsState" class="empty-state" style="display: none; padding: 40px 20px;">
+              <div class="empty-icon">📝</div>
+              <h4>目前無符合條件的請假紀錄</h4>
+              <p class="text-muted text-sm">於全班點名清單中為學生標記「請假」，或點擊上方「補登/新增請假紀錄」即可留存！</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 子視圖：歷史出缺席紀錄（可選日期補登／修改） -->
+        <div id="subtab-attendance-backfill" class="subtab-content" style="display: none;">
+          <div class="backfill-date-bar">
+            <div class="backfill-date-controls">
+              <button type="button" id="backfillPrevBtn" class="btn btn-outline" title="前一天">◀</button>
+              <input type="date" id="backfillDateInput" class="form-input" aria-label="選擇歷史出缺席日期">
+              <button type="button" id="backfillNextBtn" class="btn btn-outline" title="後一天">▶</button>
+              <select id="historyDateSelect" class="form-input" aria-label="已有紀錄的日期" title="快速跳到已有紀錄的某一天">
+                <option value="">已有紀錄的日期…</option>
+              </select>
+              <button type="button" id="backfillTodayBtn" class="date-chip" data-offset="0">今天</button>
+              <button type="button" id="backfillYesterdayBtn" class="date-chip" data-offset="-1">昨天</button>
+              <button type="button" id="backfillLastWeekBtn" class="date-chip" data-offset="-7">上週同日</button>
+            </div>
+            <div class="backfill-stats" id="backfillStatsBar">
+              <span>出席 <strong id="backfillStatPresent">0</strong></span>
+              <span>請假 <strong id="backfillStatLeave">0</strong></span>
+              <span>缺席 <strong id="backfillStatAbsent">0</strong></span>
+              <span>未標記 <strong id="backfillStatUnmarked">0</strong></span>
+            </div>
+          </div>
+          <p class="text-muted text-sm" style="margin:0 0 10px;">可選過去任一日期查看全班歷史出缺席；直接改狀態即為補登或覆寫該日最新紀錄。點「請假」可補登假別與事由。</p>
+          <div class="records-table-card">
+            <div class="table-responsive">
+              <table class="records-table">
+                <thead>
+                  <tr>
+                    <th>學號</th>
+                    <th>姓名</th>
+                    <th>分組</th>
+                    <th>當日出缺席</th>
+                    <th>請假資訊</th>
+                    <th>修改狀態</th>
+                  </tr>
+                </thead>
+                <tbody id="backfillTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 子視圖 2: 出缺勤警戒名單監控 (警假名單) -->
+        <div id="subtab-warning-monitor" class="subtab-content" style="display: none;">
+          <div class="alert-monitor-banner">
+            <div class="banner-icon">🚨</div>
+            <div>
+              <h4>課堂曠缺警戒監控說明</h4>
+              <p>依據學則與授課規範：累積缺席達 <strong>3 次</strong> 列入「嚴重扣考危機」；累積缺席 <strong>2 次</strong> 或請假達 <strong>3 次</strong> 列入「警戒注意」。請授課教師主動關懷或通知系所導師協處。</p>
+            </div>
+          </div>
+
+          <!-- 警戒學生卡片網格 -->
+          <div class="warning-cards-grid" id="warningCardsGrid">
+            <!-- 警戒名單由 JS 生成 -->
+          </div>
+
+          <div id="noWarningState" class="empty-state" style="display: none; padding: 50px 20px;">
+            <div class="empty-icon">🎉</div>
+            <h4>全班目前無任何達到警戒門檻之學生</h4>
+            <p class="text-muted text-sm">全體學生出席狀況良好，無異常缺勤紀錄！</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 彈窗 1：缺席學生關懷與通知中心 (Enhanced Modal) -->
+  <div class="modal-backdrop" id="notifyModal" style="display:none;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge icon-danger">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </div>
+          <div>
+            <h3>缺席學生關懷與通知中心</h3>
+            <p class="text-muted">自動篩選缺勤名冊、跨渠道通訊推播 (Email / LINE / SMS) 與個別化追蹤</p>
+          </div>
+        </div>
+        <button class="close-modal-btn" data-close="notifyModal">✕</button>
+      </div>
+
+      <!-- 通知中心內部次導覽頁籤 -->
+      <div class="modal-subnav">
+        <button class="modal-subnav-btn active" data-notify-tab="broadcast">📢 廣播通知撰寫</button>
+        <button class="modal-subnav-btn" data-notify-tab="individual">👤 個別學生關懷與備註 (<span id="notifyModalAbsentCount">0</span>)</button>
+        <button class="modal-subnav-btn" data-notify-tab="history">📜 發送歷史紀錄 (<span id="notifyHistoryCount">0</span>)</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- 分頁 1: 廣播通知撰寫與渠道切換 -->
+        <div id="notifyTabContentBroadcast" class="notify-subtab-pane active">
+          <!-- 缺席名單清單總覽 -->
+          <div class="notify-absentee-summary">
+            <div class="absentee-summary-header">
+              <span>🚨 今日缺席學生清單 (<strong id="modalAbsentCount">0</strong> 位)</span>
+              <span class="text-muted text-sm">已自動帶入缺席者標籤與累積缺勤提示</span>
+            </div>
+            <div class="absentee-chips-wrap" id="modalAbsentChips">
+              <!-- 缺席晶片由 JS 生成 -->
+            </div>
+          </div>
+
+          <!-- 通訊渠道選擇 -->
+          <div class="channel-selector-wrap">
+            <label class="form-label">選擇推播與傳遞管道：</label>
+            <div class="channel-buttons">
+              <button type="button" class="channel-btn active" data-channel="email">
+                <span class="channel-icon">✉️</span>
+                <span>電子郵件 (Email)</span>
+              </button>
+              <button type="button" class="channel-btn" data-channel="line">
+                <span class="channel-icon">💬</span>
+                <span>LINE 班群公告</span>
+              </button>
+              <button type="button" class="channel-btn" data-channel="sms">
+                <span class="channel-icon">📱</span>
+                <span>簡訊 (SMS) 模式</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 範本選取切換 -->
+          <div class="template-selector-wrap">
+            <label class="form-label">選擇通知風格範本：</label>
+            <div class="template-options">
+              <label class="template-radio active">
+                <input type="radio" name="msgTemplate" value="gentle" checked>
+                <span class="radio-card">
+                  <strong>🌱 溫馨關懷提醒</strong>
+                  <small>語氣親切，詢問缺席原由與作業補交說明</small>
+                </span>
+              </label>
+              <label class="template-radio">
+                <input type="radio" name="msgTemplate" value="formal">
+                <span class="radio-card">
+                  <strong>📋 正式課堂缺勤警示</strong>
+                  <small>校規缺勤規則、扣分警示與請假證明辦理手續</small>
+                </span>
+              </label>
+              <label class="template-radio">
+                <input type="radio" name="msgTemplate" value="exam">
+                <span class="radio-card">
+                  <strong>📝 課堂隨堂測驗/分組公告</strong>
+                  <small>提醒本日堂課重要進度與組員協作補救</small>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 訊息主旨與內容自訂編輯 -->
+          <div class="form-group" id="notifySubjectGroup">
+            <label class="form-label" for="notifySubject">通知主旨：</label>
+            <input type="text" id="notifySubject" class="form-input" value="【課堂缺席關懷通知】互動網頁程式設計 (三)">
+          </div>
+
+          <div class="form-group">
+            <div class="textarea-header">
+              <label class="form-label" for="notifyBody">通知內文預覽：</label>
+              <span class="char-count-badge" id="charCountBadge">字數: 0 字</span>
+            </div>
+            <textarea id="notifyBody" class="form-textarea" rows="6"></textarea>
+          </div>
+
+          <!-- 模擬發送日誌即時展示 -->
+          <div id="notifySentAlert" class="alert alert-success" style="display:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div id="notifySentAlertText">已成功發送通知訊息給所有缺席學生！</div>
+          </div>
+        </div>
+
+        <!-- 分頁 2: 個別學生關懷備註 -->
+        <div id="notifyTabContentIndividual" class="notify-subtab-pane" style="display:none;">
+          <div class="individual-absentee-list" id="individualAbsenteeList">
+            <!-- 個別缺席學生卡片由 JS 動態生成 -->
+          </div>
+        </div>
+
+        <!-- 分頁 3: 發送歷史紀錄 -->
+        <div id="notifyTabContentHistory" class="notify-subtab-pane" style="display:none;">
+          <div class="notify-history-timeline" id="notifyHistoryTimeline">
+            <!-- 歷史推播日誌由 JS 動態生成 -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="notifyModal">取消關閉</button>
+        <button id="copyNotifyContentBtn" class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="copyNotifyBtnText">複製通知文字</span>
+        </button>
+        <button id="openMailtoBtn" class="btn btn-secondary-emerald">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <span>開啟信箱 (密件 BCC)</span>
+        </button>
+        <button id="simulateSendBtn" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          <span>確認發送通知並留存日誌</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 彈窗：請假類別與事由選擇 (Modal) -->
+  <div class="modal-backdrop" id="leavePickerModal" style="display:none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge icon-leave">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h3>登記學生請假類別</h3>
+            <p class="text-muted">為 <strong id="leavePickerStudentName">學生</strong> (<span id="leavePickerStudentId">學號</span>) 選擇日期、假別與事由</p>
+          </div>
+        </div>
+        <button class="close-modal-btn" data-close="leavePickerModal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="leavePickerStudentIdInput">
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="leavePickerDate">請假日期 <span class="text-rose">*</span></label>
+          <input type="date" id="leavePickerDate" class="form-input">
+          <small class="text-muted">可改為過去日期以補登或覆寫當日請假（同一日以最新為準）。</small>
+        </div>
+
+        <label class="form-label">請選擇請假類別 <span class="text-rose">*</span>：</label>
+        <div class="leave-type-grid">
+          <label class="leave-type-option">
+            <input type="radio" name="selectedLeaveType" value="official">
+            <span class="leave-type-card type-official">
+              <span class="type-icon">🏢</span>
+              <strong>公假</strong>
+              <small>校隊、公務、代表出賽</small>
+            </span>
+          </label>
+
+          <label class="leave-type-option">
+            <input type="radio" name="selectedLeaveType" value="personal" checked>
+            <span class="leave-type-card type-personal">
+              <span class="type-icon">🏠</span>
+              <strong>事假</strong>
+              <small>個人事由、家庭事務事前報備</small>
+            </span>
+          </label>
+
+          <label class="leave-type-option">
+            <input type="radio" name="selectedLeaveType" value="mental">
+            <span class="leave-type-card type-mental">
+              <span class="type-icon">🧠</span>
+              <strong>心理假</strong>
+              <small>身心調適、情緒休息與諮商</small>
+            </span>
+          </label>
+
+          <label class="leave-type-option">
+            <input type="radio" name="selectedLeaveType" value="bereavement">
+            <span class="leave-type-card type-bereavement">
+              <span class="type-icon">🕊️</span>
+              <strong>喪假</strong>
+              <small>親屬治喪或祭拜手續</small>
+            </span>
+          </label>
+
+          <label class="leave-type-option">
+            <input type="radio" name="selectedLeaveType" value="sick">
+            <span class="leave-type-card type-sick">
+              <span class="type-icon">💊</span>
+              <strong>病假</strong>
+              <small>感冒不適、就醫看診休養</small>
+            </span>
+          </label>
+        </div>
+
+        <div class="form-group" style="margin-top: 14px;">
+          <label class="form-label" for="leaveReasonInput">請假事由說明 (選填)：</label>
+          <input type="text" id="leaveReasonInput" class="form-input" placeholder="例如：參加全國大專體育盃競賽 / 腸胃炎就醫">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close="leavePickerModal">取消</button>
+        <button type="button" id="confirmLeavePickerBtn" class="btn btn-primary">確定登記請假</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 彈窗：補登/新增請假紀錄 (Modal) -->
+  <div class="modal-backdrop" id="manualLeaveModal" style="display:none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge icon-leave">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h3>補登或修改出缺席／請假</h3>
+            <p class="text-muted">選擇或自訂日期後，為指定學生補登或覆寫該日的出席、請假或缺席</p>
+          </div>
+        </div>
+        <button class="close-modal-btn" data-close="manualLeaveModal">✕</button>
+      </div>
+
+      <form id="manualLeaveForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="manualLeaveStudentSelect">選擇學生 <span class="text-rose">*</span></label>
+            <select id="manualLeaveStudentSelect" class="form-input" required>
+              <!-- JS 動態生成學生選項 -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="manualLeaveDate">紀錄日期 <span class="text-rose">*</span></label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input type="date" id="manualLeaveDate" class="form-input" required style="flex:1;min-width:160px;">
+              <button type="button" class="date-chip" data-manual-offset="0">今天</button>
+              <button type="button" class="date-chip" data-manual-offset="-1">昨天</button>
+              <button type="button" class="date-chip" data-manual-offset="-7">上週同日</button>
+            </div>
+            <p id="manualExistingHint" class="text-muted text-sm" style="margin:6px 0 0;">選擇學生與日期後，會帶入該日既有狀態供修改。</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">當日出缺席狀態 <span class="text-rose">*</span></label>
+            <div class="status-toggle-group" style="justify-content:flex-start;">
+              <label class="status-btn btn-state-present">
+                <input type="radio" name="manualAttendanceStatus" value="present" style="display:none;"> ✓ 出席
+              </label>
+              <label class="status-btn btn-state-leave">
+                <input type="radio" name="manualAttendanceStatus" value="leave" checked style="display:none;"> ⏱ 請假
+              </label>
+              <label class="status-btn btn-state-absent">
+                <input type="radio" name="manualAttendanceStatus" value="absent" style="display:none;"> ✕ 缺席
+              </label>
+              <label class="status-btn btn-state-unmarked">
+                <input type="radio" name="manualAttendanceStatus" value="unmarked" style="display:none;"> ○ 未標記
+              </label>
+            </div>
+          </div>
+
+          <div id="manualLeaveFieldsWrap">
+            <div class="form-group">
+              <label class="form-label" for="manualLeaveType">請假類別 <span class="text-rose">*</span></label>
+              <select id="manualLeaveType" class="form-input">
+                <option value="official">🏢 公假</option>
+                <option value="personal">🏠 事假</option>
+                <option value="mental">🧠 心理假</option>
+                <option value="bereavement">🕊️ 喪假</option>
+                <option value="sick">💊 病假</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="manualLeaveReason">請假事由與證明說明</label>
+              <input type="text" id="manualLeaveReason" class="form-input" placeholder="例如：持診所醫療收據辦理補請假">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close="manualLeaveModal">取消</button>
+          <button type="submit" class="btn btn-primary">儲存此日最新狀態</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 彈窗 2：新增學生 (Modal) -->
+  <div class="modal-backdrop" id="addStudentModal" style="display:none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge icon-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <line x1="20" y1="8" x2="20" y2="14"></line>
+              <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+          </div>
+          <div>
+            <h3>新增班級學生</h3>
+            <p class="text-muted">填寫學生基本資料加入點名名冊</p>
+          </div>
+        </div>
+        <button class="close-modal-btn" data-close="addStudentModal">✕</button>
+      </div>
+
+      <form id="addStudentForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="newStudentName">學生姓名 <span class="text-rose">*</span></label>
+            <input type="text" id="newStudentName" class="form-input" placeholder="例如：陳怡均" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="newStudentId">學號 <span class="text-rose">*</span></label>
+              <input type="text" id="newStudentId" class="form-input" placeholder="例如：41120035" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="newStudentGroup">分組 / 系級</label>
+              <input type="text" id="newStudentGroup" class="form-input" placeholder="例如：第 3 組">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="newStudentEmail">電子信箱 (發通知用)</label>
+            <input type="email" id="newStudentEmail" class="form-input" placeholder="例如：chen.yj@univ.edu.tw">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close="addStudentModal">取消</button>
+          <button type="submit" class="btn btn-primary">確定新增</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 彈窗 3：名單備份與匯入/匯出 (Modal) -->
+  <div class="modal-backdrop" id="exportImportModal" style="display:none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge icon-indigo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </div>
+          <div>
+            <h3>名冊備份與資料管理</h3>
+            <p class="text-muted">匯出目前出缺席結果或匯入新學生名冊</p>
+          </div>
+        </div>
+        <button class="close-modal-btn" data-close="exportImportModal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="backup-actions">
+          <div class="backup-card">
+            <h4>📊 匯出今日點名報表 (CSV)</h4>
+            <p class="text-muted text-sm">匯出包含學號、姓名、出席狀態、平時表現分數之報表</p>
+            <button id="exportCsvBtn" class="btn btn-secondary-emerald w-full">下載點名紀錄 CSV</button>
+          </div>
+
+          <div class="backup-card">
+            <h4>💾 匯出完整名單備份 (JSON)</h4>
+            <p class="text-muted text-sm">完整備份所有學生名冊與歷次出缺席資料</p>
+            <button id="exportJsonBtn" class="btn btn-outline w-full">下載 JSON 備份檔</button>
+          </div>
+
+          <div class="backup-card">
+            <h4>🔄 恢復範例名單</h4>
+            <p class="text-muted text-sm">重置回系統預設之 20 位示範學生名冊</p>
+            <button id="restoreDefaultListBtn" class="btn btn-outline text-amber w-full">恢復 20 位預設名單</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-close="exportImportModal">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 浮動提示元件 -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- 引用主邏輯 JS -->
+  <script src="app.js"></script>
+</body>
+</html>
